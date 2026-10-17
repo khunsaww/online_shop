@@ -1,0 +1,29 @@
+<% content_for :title, "注文履歴 | #{Store.shop_name}" %>
+<h1>注文履歴</h1>
+
+<% if @orders.empty? %>
+  <p class="empty">注文はまだありません。</p>
+<% else %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>注文日時</th>
+        <th>受け渡し</th>
+        <th>状態</th>
+        <th>合計</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @orders.each do |order| %>
+        <tr>
+          <td><%= l(order.ordered_at, format: :long) %></td>
+          <td><%= order.fulfillment_method.name %></td>
+          <td><%= order.order_status.name %></td>
+          <td><%= yen(order.total_price) %></td>
+          <td><%= link_to "詳細", order_path(order) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

@@ -1,0 +1,46 @@
+<h1>注文 #<%= @order.id %></h1>
+<p><%= l(@order.ordered_at, format: :long) %></p>
+<p><%= @order.user.last_name %> <%= @order.user.first_name %>（<%= @order.user.email %>）</p>
+<p>受け渡し: <%= @order.fulfillment_method.name %></p>
+<p>状態: <%= @order.order_status.name %></p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>商品</th>
+      <th>選択肢</th>
+      <th>単価</th>
+      <th>数量</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |item| %>
+      <tr>
+        <td><%= item.product_name %></td>
+        <td><%= item.variant_label %></td>
+        <td><%= yen(item.unit_price) %></td>
+        <td><%= item.quantity %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<p class="total">合計 <%= yen(@order.total_price) %></p>
+
+<% if @order.delivery? && @order.address.present? %>
+  <section class="panel">
+    <h2>配送先</h2>
+    <p>〒<%= @order.address.postal_code %> <%= @order.address.prefecture.name %><%= @order.address.city %><%= @order.address.house_number %> <%= @order.address.building_name %></p>
+    <p><%= @order.address.phone_number %></p>
+  </section>
+<% end %>
+
+<% if @next_statuses.any? %>
+  <%= form_with model: @order, url: admin_order_path(@order), method: :patch do |f| %>
+    <%= f.label :status_id, "次の状態" %>
+    <%= f.select :status_id, @next_statuses.map { |status| [status.name, status.id] } %>
+    <p class="muted">キャンセルは状態だけを変えます。在庫は戻さず、返金も自動では行いません。</p>
+    <%= f.submit "状態を更新" %>
+  <% end %>
+<% else %>
+  <p class="muted">この注文の状態はこれ以上変更できません。</p>
+<% end %>

@@ -1,0 +1,16 @@
+<h1>新規登録</h1>
+<%= render "shared/errors", model: resource %>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= f.label :last_name, "姓" %>
+  <%= f.text_field :last_name, autocomplete: "family-name" %>
+  <%= f.label :first_name, "名" %>
+  <%= f.text_field :first_name, autocomplete: "given-name" %>
+  <%= f.label :email, "メールアドレス" %>
+  <%= f.email_field :email, autocomplete: "email" %>
+  <%= f.label :password, "パスワード（英字と数字の両方を含む6文字以上）" %>
+  <%= f.password_field :password, autocomplete: "new-password" %>
+  <%= f.label :password_confirmation, "パスワード（確認）" %>
+  <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  <%= f.submit "登録する" %>
+<% end %>
+<p><%= link_to "ログイン", new_session_path(resource_name) %></p>

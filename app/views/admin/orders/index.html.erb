@@ -1,0 +1,26 @@
+<% content_for :title, "注文 | 管理画面" %>
+<h1>注文</h1>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>日時</th>
+      <th>お客様</th>
+      <th>受け渡し</th>
+      <th>状態</th>
+      <th>合計</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @orders.each do |order| %>
+      <tr>
+        <td><%= l(order.ordered_at, format: :long) %></td>
+        <td><%= order.user.last_name %> <%= order.user.first_name %></td>
+        <td><%= order.fulfillment_method.name %></td>
+        <td><%= order.order_status.name %></td>
+        <td><%= yen(order.total_price) %></td>
+        <td><%= link_to "詳細", admin_order_path(order) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

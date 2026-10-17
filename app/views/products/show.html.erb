@@ -1,0 +1,40 @@
+<% content_for :title, "#{@product.name} | #{Store.shop_name}" %>
+
+<article class="product-detail">
+  <div class="detail-image">
+    <%= product_image_tag @product, alt: @product.name %>
+  </div>
+  <div class="detail-body">
+    <p class="category-label"><%= @product.category.name %></p>
+    <h1><%= @product.name %></h1>
+    <% unless @product.published? %>
+      <p class="badge badge-empty">非公開</p>
+    <% end %>
+    <p class="description"><%= simple_format(@product.description) %></p>
+
+    <%= form_with url: cart_items_path, method: :post, data: { controller: "variant-picker" } do %>
+      <fieldset class="variant-list">
+        <legend>選択肢</legend>
+        <% available_variant = @product.variants.find { |variant| variant.stock.positive? } %>
+        <% @product.variants.order(:id).each do |variant| %>
+          <label class="variant-option">
+            <%= radio_button_tag :variant_id, variant.id, variant == available_variant,
+                  data: { action: "variant-picker#change", variant_picker_target: "variant", stock: variant.stock },
+                  disabled: variant.stock.zero? %>
+            <span>
+              <%= variant.option_kind.name %> <%= variant.label %>
+              <strong><%= yen(variant.price) %></strong>
+              <em class="<%= stock_class(variant.stock_status) %>"><%= variant.stock_status %></em>
+            </span>
+          </label>
+        <% end %>
+      </fieldset>
+
+      <label class="quantity-field">
+        数量
+        <%= number_field_tag :quantity, 1, min: 1, max: @product.variants.map(&:stock).max.to_i, data: { variant_picker_target: "quantity" }, disabled: @product.sold_out? %>
+      </label>
+      <%= submit_tag "カートに追加", disabled: @product.sold_out? || !@product.published? %>
+    <% end %>
+  </div>
+</article>

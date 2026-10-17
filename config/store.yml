@@ -1,0 +1,8 @@
+shared:
+  name: 青果マルシェ
+  postal_code: "150-0001"
+  prefecture_id: 13
+  city: 渋谷区
+  house_number: 1-2-3
+  building_name: マルシェビル 1F
+  phone_number: "0312345678"

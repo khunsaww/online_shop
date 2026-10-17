@@ -1,0 +1,55 @@
+<% content_for :title, "注文 | #{Store.shop_name}" %>
+<h1>注文内容の確認</h1>
+
+<ul class="summary-list">
+  <% @cart_items.each do |item| %>
+    <li>
+      <span class="product-name-cell">
+        <%= product_image_tag item.variant.product, alt: item.variant.product.name, class: "product-thumb" %>
+        <span><%= item.variant.product.name %>（<%= item.variant.label %>） × <%= item.quantity %></span>
+      </span>
+      <span><%= yen(item.subtotal) %></span>
+    </li>
+  <% end %>
+</ul>
+<p class="total">支払金額 <%= yen(@order_form.total_price) %></p>
+<p>受け渡し: <%= @cart.fulfillment_method.name %></p>
+
+<%= render "shared/errors", model: @order_form %>
+
+<%= form_with model: @order_form, url: orders_path, id: "charge-form", data: { turbo: false } do |f| %>
+  <section class="panel">
+    <h2>クレジットカード</h2>
+    <p class="muted">カード番号は保存しません。</p>
+    <label>カード番号<div id="number-form" class="payjp-field"></div></label>
+    <label>有効期限<div id="expiry-form" class="payjp-field"></div></label>
+    <label>セキュリティコード<div id="cvc-form" class="payjp-field"></div></label>
+  </section>
+
+  <% if @order_form.delivery? %>
+    <section class="panel">
+      <h2>配送先</h2>
+      <%= f.label :postal_code, "郵便番号" %>
+      <%= f.text_field :postal_code, placeholder: "123-4567" %>
+      <%= f.label :prefecture_id, "都道府県" %>
+      <%= f.collection_select :prefecture_id, Prefecture.all, :id, :name, { include_blank: "---" } %>
+      <%= f.label :city, "市区町村" %>
+      <%= f.text_field :city %>
+      <%= f.label :house_number, "番地" %>
+      <%= f.text_field :house_number %>
+      <%= f.label :building_name, "建物名" %>
+      <%= f.text_field :building_name %>
+      <%= f.label :phone_number, "電話番号" %>
+      <%= f.text_field :phone_number, placeholder: "09012345678" %>
+    </section>
+  <% else %>
+    <section class="panel">
+      <h2>受け取り店舗</h2>
+      <% Store.address_lines.each do |line| %>
+        <p><%= line %></p>
+      <% end %>
+    </section>
+  <% end %>
+
+  <%= f.submit "注文を確定する" %>
+<% end %>

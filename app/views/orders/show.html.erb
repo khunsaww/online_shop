@@ -1,0 +1,46 @@
+<% content_for :title, "注文詳細 | #{Store.shop_name}" %>
+<h1>注文詳細</h1>
+<p>注文日時: <%= l(@order.ordered_at, format: :long) %></p>
+<p>受け渡し: <%= @order.fulfillment_method.name %></p>
+<p>状態: <%= @order.order_status.name %></p>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>商品</th>
+      <th>選択肢</th>
+      <th>単価</th>
+      <th>数量</th>
+      <th>小計</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |item| %>
+      <tr>
+        <td><%= item.product_name %></td>
+        <td><%= item.variant_label %></td>
+        <td><%= yen(item.unit_price) %></td>
+        <td><%= item.quantity %></td>
+        <td><%= yen(item.subtotal) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<p class="total">合計 <%= yen(@order.total_price) %></p>
+
+<% if @order.delivery? && @order.address.present? %>
+  <section class="panel">
+    <h2>配送先</h2>
+    <p>〒<%= @order.address.postal_code %></p>
+    <p><%= @order.address.prefecture.name %><%= @order.address.city %><%= @order.address.house_number %></p>
+    <p><%= @order.address.building_name %></p>
+    <p><%= @order.address.phone_number %></p>
+  </section>
+<% elsif @order.pickup? %>
+  <section class="panel">
+    <h2>受け取り店舗</h2>
+    <% Store.address_lines.each do |line| %>
+      <p><%= line %></p>
+    <% end %>
+  </section>
+<% end %>

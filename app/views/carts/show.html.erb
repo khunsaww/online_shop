@@ -1,0 +1,77 @@
+<% content_for :title, "カート | #{Store.shop_name}" %>
+<h1>カート</h1>
+
+<% if @cart_items.empty? %>
+  <p class="empty">カートに商品はありません。</p>
+  <%= link_to "商品を見る", root_path, class: "button" %>
+<% else %>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>商品</th>
+        <th>単価</th>
+        <th>数量</th>
+        <th>小計</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cart_items.each do |item| %>
+        <tr>
+          <td>
+            <div class="product-name-cell">
+              <%= product_image_tag item.variant.product, alt: item.variant.product.name, class: "product-thumb" %>
+              <span>
+                <%= item.variant.product.name %>
+                <span class="muted"><%= item.variant.label %></span>
+              </span>
+            </div>
+            <% unless item.purchasable? %>
+              <span class="badge badge-empty"><%= item.variant.product.published? ? "在庫不足" : "購入不可" %></span>
+            <% end %>
+          </td>
+          <td><%= yen(item.variant.price) %></td>
+          <td>
+            <%= form_with model: item, url: cart_item_path(item), method: :patch do |f| %>
+              <%= f.number_field :quantity, min: 1, max: item.variant.stock %>
+              <%= f.submit "変更" %>
+            <% end %>
+          </td>
+          <td><%= yen(item.subtotal) %></td>
+          <td><%= button_to "削除", cart_item_path(item), method: :delete %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <p class="total">合計 <%= yen(@cart.total_price) %>（税込・送料なし）</p>
+
+  <section class="panel">
+    <h2>受け渡し方法</h2>
+    <%= form_with model: @cart, url: cart_path, method: :patch do |f| %>
+      <% FulfillmentMethod.all.each do |method| %>
+        <label class="choice">
+          <%= f.radio_button :fulfillment_method_id, method.id %>
+          <%= method.name %>
+        </label>
+      <% end %>
+      <%= f.submit "受け渡し方法を保存" %>
+    <% end %>
+
+    <% if @cart.pickup? %>
+      <div class="store-box">
+        <h3><%= Store.shop_name %>で受け取り</h3>
+        <% Store.address_lines.each do |line| %>
+          <p><%= line %></p>
+        <% end %>
+      </div>
+    <% elsif @cart.delivery? %>
+      <p class="muted">次の画面で配送先を入力します。送料はかかりません。</p>
+    <% end %>
+  </section>
+
+  <% if @cart.fulfillment_method_id.present? && !@cart.checkout_blocked? %>
+    <%= link_to "注文へ進む", new_order_path, class: "button" %>
+  <% else %>
+    <p class="muted">受け渡し方法を選び、在庫内の数量にしてから注文へ進めます。</p>
+  <% end %>
+<% end %>

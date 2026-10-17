@@ -1,0 +1,8 @@
+<%= render "shared/errors", model: category %>
+<%= form_with model: [:admin, category] do |f| %>
+  <%= f.label :name, "カテゴリ名" %>
+  <%= f.text_field :name %>
+  <%= f.label :position, "並び順" %>
+  <%= f.number_field :position, min: 0 %>
+  <%= f.submit %>
+<% end %>

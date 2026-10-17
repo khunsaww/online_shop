@@ -1,0 +1,32 @@
+<h1><%= @product.name %></h1>
+<p><%= @product.published? ? "公開" : "非公開" %> / <%= @product.category.name %></p>
+<%= product_image_tag @product, alt: @product.name, class: "admin-image" %>
+<p><%= simple_format(@product.description) %></p>
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>種類</th>
+      <th>ラベル</th>
+      <th>価格</th>
+      <th>在庫</th>
+      <th>注文参照</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @product.variants.each do |variant| %>
+      <tr>
+        <td><%= variant.option_kind.name %></td>
+        <td><%= variant.label %></td>
+        <td><%= yen(variant.price) %></td>
+        <td><%= variant.stock %>（<%= variant.stock_status %>）</td>
+        <td><%= variant.ordered? ? "あり" : "なし" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<%= link_to "編集", edit_admin_product_path(@product), class: "button" %>
+<% if @product.ordered_variants? %>
+  <p class="muted">注文で参照されている選択肢があるため、商品は削除できません。売り止めは在庫を0にしてください。</p>
+<% else %>
+  <%= button_to "商品を削除", admin_product_path(@product), method: :delete, form: { data: { turbo_confirm: "削除しますか？" } } %>
+<% end %>

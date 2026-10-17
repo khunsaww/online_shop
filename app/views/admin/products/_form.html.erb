@@ -1,0 +1,29 @@
+<%= render "shared/errors", model: product %>
+<%= form_with model: [:admin, product], data: { controller: "variant-fields" } do |f| %>
+  <%= f.label :category_id, "カテゴリ" %>
+  <%= f.collection_select :category_id, categories, :id, :name, { include_blank: "選択してください" } %>
+  <%= f.label :name, "商品名" %>
+  <%= f.text_field :name %>
+  <%= f.label :description, "説明" %>
+  <%= f.text_area :description, rows: 5 %>
+  <%= f.label :published, "公開する" %>
+  <%= f.check_box :published %>
+  <%= f.label :image, "画像" %>
+  <%= f.file_field :image, accept: "image/png,image/jpeg,image/webp" %>
+  <% if product.image.attached? %>
+    <p><%= product_image_tag product, alt: product.name, class: "admin-image" %></p>
+  <% end %>
+
+  <div data-variant-fields-target="container">
+    <%= f.fields_for :variants do |variant_form| %>
+      <%= render "variant_fields", f: variant_form %>
+    <% end %>
+  </div>
+  <template data-variant-fields-target="template">
+    <%= f.fields_for :variants, Variant.new, child_index: "NEW_RECORD" do |variant_form| %>
+      <%= render "variant_fields", f: variant_form %>
+    <% end %>
+  </template>
+  <button type="button" data-action="variant-fields#add">選択肢を追加</button>
+  <%= f.submit %>
+<% end %>

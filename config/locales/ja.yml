@@ -1,0 +1,66 @@
+ja:
+  time:
+    formats:
+      long: "%Y年%-m月%-d日 %H:%M"
+  errors:
+    format: "%{attribute}%{message}"
+  activerecord:
+    errors:
+      messages:
+        blank: "を入力してください"
+        invalid: "が不正です"
+        taken: "はすでに存在します"
+        confirmation: "と一致しません"
+        not_a_number: "は数値で入力してください"
+        greater_than_or_equal_to: "は%{count}以上の値にしてください"
+        inclusion: "は一覧にありません"
+        too_short: "は%{count}文字以上にしてください"
+        not_saved: "%{count}件のエラーがあります"
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        last_name: "姓"
+        first_name: "名"
+      product:
+        name: "商品名"
+        description: "説明"
+        image: "画像"
+        category: "カテゴリ"
+      variant:
+        label: "ラベル"
+        price: "販売価格"
+        stock: "在庫数"
+      cart_item:
+        quantity: "数量"
+      category:
+        name: "カテゴリ名"
+        position: "並び順"
+      address:
+        postal_code: "郵便番号"
+        prefecture_id: "都道府県"
+        city: "市区町村"
+        house_number: "番地"
+        phone_number: "電話番号"
+  activemodel:
+    attributes:
+      order_form:
+        postal_code: "郵便番号"
+        prefecture_id: "都道府県"
+        city: "市区町村"
+        house_number: "番地"
+        phone_number: "電話番号"
+        token: "決済トークン"
+  devise:
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "ログアウトしました。"
+    registrations:
+      signed_up: "アカウントを登録しました。"
+    failure:
+      already_authenticated: "すでにログインしています。"
+      unauthenticated: "ログインしてください。"
+      invalid: "メールアドレスまたはパスワードが違います。"
+      not_found_in_database: "メールアドレスまたはパスワードが違います。"

@@ -1,0 +1,30 @@
+<% content_for :title, "#{@selected_category&.name || "商品一覧"} | #{Store.shop_name}" %>
+
+<section class="page-head">
+  <h1><%= @selected_category&.name || "商品一覧" %></h1>
+  <% if params[:keyword].present? %>
+    <p class="muted">「<%= params[:keyword] %>」の検索結果</p>
+  <% end %>
+</section>
+
+<% if @products.empty? %>
+  <p class="empty">該当する商品はありません。</p>
+<% else %>
+  <ul class="product-grid">
+    <% @products.each do |product| %>
+      <li class="product-card <%= "is-sold-out" if product.sold_out? %>">
+        <%= link_to product_path(product), class: "card-link" do %>
+          <div class="card-image">
+            <%= product_image_tag product, alt: product.name %>
+            <span class="<%= stock_class(product.stock_status) %>"><%= product.stock_status %></span>
+          </div>
+          <div class="card-body">
+            <p class="category-label"><%= product.category.name %></p>
+            <h2><%= product.name %></h2>
+            <p class="price"><%= yen(product.display_price) %><span>税込</span></p>
+          </div>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

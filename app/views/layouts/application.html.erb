@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title><%= content_for(:title) || Store.shop_name %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= include_gon %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <script src="https://js.pay.jp/v2/pay.js"></script>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <%= link_to Store.shop_name, root_path, class: "logo" %>
+        <%= form_with url: root_path, method: :get, class: "search-form" do %>
+          <%= select_tag :category_id,
+                options_from_collection_for_select(Category.order(:position, :id), :id, :name, params[:category_id]),
+                include_blank: "すべてのカテゴリ" %>
+          <%= text_field_tag :keyword, params[:keyword], placeholder: "商品名や説明" %>
+          <%= submit_tag "検索" %>
+        <% end %>
+        <nav class="account-nav">
+          <% if user_signed_in? %>
+            <%= link_to "カート（#{current_cart.cart_items.sum(:quantity)}）", cart_path %>
+            <%= link_to "注文履歴", orders_path %>
+            <%= link_to "管理画面", admin_root_path if current_user.admin? %>
+            <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
+          <% else %>
+            <%= link_to "ログイン", new_user_session_path %>
+            <%= link_to "新規登録", new_user_registration_path %>
+          <% end %>
+        </nav>
+      </div>
+      <% if controller_path.start_with?("admin/") %>
+        <nav class="admin-nav">
+          <%= link_to "ダッシュボード", admin_root_path %>
+          <%= link_to "カテゴリ", admin_categories_path %>
+          <%= link_to "商品", admin_products_path %>
+          <%= link_to "注文", admin_orders_path %>
+        </nav>
+      <% end %>
+    </header>
+
+    <main class="page">
+      <% if notice.present? %>
+        <p class="flash notice"><%= notice %></p>
+      <% end %>
+      <% if alert.present? %>
+        <p class="flash alert"><%= alert %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <p><%= Store.shop_name %></p>
+      <% Store.address_lines.each do |line| %>
+        <p><%= line %></p>
+      <% end %>
+    </footer>
+  </body>
+</html>

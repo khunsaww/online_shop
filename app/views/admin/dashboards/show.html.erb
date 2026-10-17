@@ -1,0 +1,33 @@
+<% content_for :title, "管理画面 | #{Store.shop_name}" %>
+<h1>管理画面</h1>
+<section class="stat">
+  <p>未対応注文</p>
+  <strong><%= @preparing_count %></strong>
+  <p class="muted">準備中の注文です。</p>
+</section>
+
+<section class="panel">
+  <h2>残りわずか</h2>
+  <% if @low_stock_variants.empty? %>
+    <p class="empty">該当する選択肢はありません。</p>
+  <% else %>
+    <ul>
+      <% @low_stock_variants.each do |variant| %>
+        <li><%= link_to "#{variant.product.name}（#{variant.label}） 在庫 #{variant.stock}", edit_admin_product_path(variant.product) %></li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
+
+<section class="panel">
+  <h2>在庫なし</h2>
+  <% if @out_of_stock_variants.empty? %>
+    <p class="empty">該当する選択肢はありません。</p>
+  <% else %>
+    <ul>
+      <% @out_of_stock_variants.each do |variant| %>
+        <li><%= link_to "#{variant.product.name}（#{variant.label}）", edit_admin_product_path(variant.product) %></li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>
